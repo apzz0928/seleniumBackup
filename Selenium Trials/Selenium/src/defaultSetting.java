@@ -1,0 +1,162 @@
+import java.util.Set;
+
+import org.junit.*;
+
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.junit.runners.MethodSorters;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Alert;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class defaultSetting {
+	private static WebDriver driver;
+	private static String TestBrowser;
+	private static StringBuffer verificationErrors = new StringBuffer();
+	private static String CHROMEDRIVER_FILE_PATH;
+	private static String FIREFOXDRIVER_FILE_PATH;
+	private static String INTERNETEXPLORER_FILE_PATH;
+  	private static JavascriptExecutor js; 
+  	private static String baseUrl;
+  	private static HttpURLConnection huc;
+  	private static int respCode;
+  	
+    @BeforeClass
+    public static void setUp() throws Exception {
+  		TestBrowser = "firefox";
+  		CHROMEDRIVER_FILE_PATH = "D:/Selenium/chromedriver.exe"; //크롬 드라이버 파일 경로
+  		FIREFOXDRIVER_FILE_PATH = "D:/Selenium/geckodriver.exe"; //파이어폭스 드라이버 파일 경로
+  		INTERNETEXPLORER_FILE_PATH = "D:/Selenium/IEDriverServer32.exe"; //IE 드라이버 파일 경로  		
+  		
+  		if(TestBrowser.equals("chrome")){
+  		//테스트 브라우저를 크롬으로 설정
+  	  		System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_FILE_PATH);
+  	  		driver = new ChromeDriver();
+  		} else if (TestBrowser.equals("firefox")) {
+  	  		System.setProperty("webdriver.gecko.driver", FIREFOXDRIVER_FILE_PATH);
+  	  		driver = new FirefoxDriver();
+  		} else if (TestBrowser.equals("ie")) {
+  			System.setProperty("webdriver.ie.driver", INTERNETEXPLORER_FILE_PATH);
+  	  		driver = new InternetExplorerDriver();
+  		}
+  		driver.manage().window().setSize(new Dimension(1200, 1400));
+  		//javaScript를 쓸 수 있도록 해줌
+  		js = (JavascriptExecutor) driver;
+  		huc = null;
+  		respCode = 200;
+  		baseUrl = "http://www.herowarz.com";
+
+    }
+  	
+  	//링크 정상 여부 확인
+  	public static boolean brokenLinkCheck (String urlName, String urlLink){
+        try {
+            huc = (HttpURLConnection)(new URL(urlLink).openConnection());
+            huc.setRequestMethod("HEAD");
+            huc.connect();
+            respCode = huc.getResponseCode();
+            if(respCode >= 400){ 
+            	System.out.println("***** " + urlName +" : 링크 상태 HTTP : " + respCode + " *****");
+            	fail();
+            } else {
+            	System.out.println(urlName +" : 링크 상태 HTTP : " + respCode);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } return false;
+    }
+  	
+  	//팝업 관리용
+  	public static void handleMultipleWindows(String windowTitle) { 
+  		Set<String> windows = driver.getWindowHandles(); 
+  		for (String window : windows) { 
+  			driver.switchTo().window(window); 
+  			if (driver.getTitle().contains(windowTitle)) { 
+  				return; 
+			} 
+		} 
+	}
+  	
+  //alert 확인 처리
+  	public static void acceptAlert(String statusText) throws Exception {
+  		try {
+  	  		Thread.sleep(3000);
+  	  		Alert alert=driver.switchTo().alert();
+  	        String alertMessage=driver.switchTo().alert().getText();
+  	        System.out.println (statusText + " : *** : " + alertMessage);
+  	        alert.accept();
+  	        Thread.sleep(1000);
+  		} catch (NoAlertPresentException e) {
+  			e.printStackTrace();
+  		}
+  	}
+  	//alert 취소 처리
+  	public static void dismissAlert(String statusText) throws Exception {
+  		try {
+	  		Thread.sleep(1000);
+	  		Alert alert=driver.switchTo().alert();
+	        String alertMessage=driver.switchTo().alert().getText();
+	        System.out.println (statusText + " : " + alertMessage);
+	        alert.dismiss();
+	        Thread.sleep(1000);
+  		} catch (NoAlertPresentException e) {
+  			e.printStackTrace();
+  		}
+  	}
+  	//프롬프트창 입력 후 확인
+  	public static void sendKeyAlert(String statusText, String number) throws Exception {
+  		try {
+	  		Thread.sleep(1000);
+	  		Alert alert=driver.switchTo().alert();
+	        String alertMessage=driver.switchTo().alert().getText();
+	        System.out.println (statusText + " : " + alertMessage);
+	        alert.sendKeys(number);
+	        alert.accept();
+	        Thread.sleep(1000);
+	  	} catch (NoAlertPresentException e) {
+			e.printStackTrace();
+		}
+  	}
+ 
+  	@Test
+  	public void A_Login() throws Exception {
+  		driver.get(baseUrl + "/index.main");
+  		Thread.sleep(1000);
+  		assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));  
+  		assertTrue(driver.getPageSource().contains("아이디 저장"));
+  		System.out.println("메인페이지 > 접근 : Pass");
+  		js.executeScript("$('.uid_login_id').val('apzz0928');");
+  		js.executeScript("$('.uid_login_password').val('qordlf12');");
+  		Thread.sleep(1000);    	
+  		js.executeScript("$('.uid_login_login').eq(0).click();");
+  		Thread.sleep(1000);
+  		assertTrue(driver.getPageSource().contains("마이페이지"));
+  		System.out.println("메인페이지 > 로그인 : Pass");
+  		Thread.sleep(1000);
+  	}
+  	
+	@AfterClass
+    public static void tearDown() throws Exception {
+    	//테스트 완료 3초 후 브라우저 종료
+        Thread.sleep(3000);
+    	driver.close();  //driver.quit() 사용시 오류나는 경우 있음
+        String verificationErrorString = verificationErrors.toString();
+        if (!"".equals(verificationErrorString)) {
+            fail(verificationErrorString);
+        }
+    }
+}

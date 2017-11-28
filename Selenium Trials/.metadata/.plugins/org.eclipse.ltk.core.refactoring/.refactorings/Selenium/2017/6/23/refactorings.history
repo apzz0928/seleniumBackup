@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;Automation&apos; to &apos;rctTest&apos;&#x0D;&#x0A;- Original project: &apos;Selenium&apos;&#x0D;&#x0A;- Original element: &apos;Automation&apos;&#x0D;&#x0A;- Renamed element: &apos;rctTest&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;Automation&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;{Automation.java[Automation" matchStrategy="1" name="rctTest" qualified="false" references="true" similarDeclarations="false" stamp="1496976525728" textual="false" version="1.0"/>
+</session>

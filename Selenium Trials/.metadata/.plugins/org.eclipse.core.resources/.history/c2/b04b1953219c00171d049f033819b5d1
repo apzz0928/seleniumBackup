@@ -1,0 +1,303 @@
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import com.codeborne.selenide.WebDriverRunner;
+
+import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.WebDriverRunner.*;
+
+import com.codeborne.selenide.testng.ScreenShooter;
+
+
+public class rctGameAccountMng_Selenide {
+	private static String baseUrl, nodeUrl;
+	private static String TestBrowser;
+	private static String accountKey;
+	
+	@BeforeClass
+	public void beforeTest() throws MalformedURLException {
+		baseUrl = "https://rct-d-p.astorm.com";
+		nodeUrl = "http://10.10.105.228:4444/wd/hub";
+  		TestBrowser = "chrome";
+  		String urlToRemoteWD = nodeUrl;
+  		DesiredCapabilities cap;
+  		ScreenShooter.captureSuccessfulTests = false;
+  		if(TestBrowser.equals("chrome")){
+	    	cap = DesiredCapabilities.chrome();
+	        RemoteWebDriver driver = new RemoteWebDriver(new URL(urlToRemoteWD),cap);
+	        WebDriverRunner.setWebDriver(driver);
+	  		driver.manage().window().setSize(new Dimension(1600, 1200));
+  		}  else if(TestBrowser.equals("firefox")) {
+  			cap = DesiredCapabilities.firefox();
+	        RemoteWebDriver driver = new RemoteWebDriver(new URL(urlToRemoteWD),cap);
+	        WebDriverRunner.setWebDriver(driver);
+	  		driver.manage().window().setSize(new Dimension(1600, 1200));
+  		} 
+  		accountKey = "350238";
+        
+    }
+	private static void js(String javaScriptSource) {
+	    executeJavaScript(javaScriptSource);
+	}
+	public void sw(String name) {
+		switchTo().window(name);
+	} 
+  	public static void windowTitle(String windowTitle) { 
+  		WebDriverRunner.getWebDriver();
+  		Set<String> windows = getWebDriver().getWindowHandles();
+  		for (String window : windows) { 
+  			switchTo().window(window); 
+  			if (getWebDriver().getTitle().contains(windowTitle)) { 
+  				return; 
+			} 
+		} 
+	}
+	@Test(priority = 0)
+	public void Login() {
+        open(baseUrl + "/login/form.ct");
+        $(By.name("j_username")).setValue("apzz0928");
+        $(By.name("j_password")).setValue("qordlf!@34");
+        $(".uid_ldap_login_submit_btn").click();
+        open(baseUrl + "/common/locale/ko");
+        System.out.println(TestBrowser + " Login : Pass");
+    }
+	//@Test(priority = 1)
+	public void accountSearch() {
+        open(baseUrl + "/account/gamedata/searchform.ct");
+        $(".fa-circle-o", 0).click();
+        $("textarea[name=searchKeyword]").setValue("영권");
+        $(".ac_btn_text", 1).click();
+        $(".uid_game_account_init", 0).click();
+        $(".uid_ok_btn").click();
+        $(".uid_ok_btn").click();
+        $(".fa-circle-o", 0).click();
+        $("textarea[name=searchKeyword]").setValue("영권");
+        $(".ac_btn_text", 1).click();
+        $(".uid_friends_list_popup_show_link", 2).click();
+        windowTitle("Control Tower @ Cockpit");
+        $(".ac_input").setValue("9000115");
+        $(".ac_btn_text", 0).click();
+        $(".ac_input").setValue("");
+        $(".ac_btn_text", 0).click();
+        windowTitle("Control Tower @ reboot");
+        $(By.linkText("영권1237")).click();
+        System.out.println(TestBrowser + " accountSearch : Pass");
+    }
+	//@Test(priority = 2)
+	public void accountBlock() throws InterruptedException {
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        Thread.sleep(5000);
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 0, 사유");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", sev:2, time:0, rea:사유 "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " account Block : Pass");
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 1).click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $("li[data-key='080102']").click();
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", sev:2, "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " account UnBlock : Pass");
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0802']").click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 1).click();
+        $("li[data-key='080201']").click();
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0, 사유");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, rea:사유 "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " character Block : Pass");
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0802']").click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 1).click();
+        $("li[data-key='080202']").click();
+        $("textarea[name=blockForm]").setValue(accountKey + ", 1, 2");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", sev:2, job:1 "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " character UnBlock : Pass");
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0803']").click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        js("$('input[name=subCategory]').eq(0).val('080301');");
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " trade Block : Pass");
+        /*
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0803']").click();
+        js("$('input[name=subCategory]').eq(0).val('080302');");
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " trade UnBlock : Pass");
+        */
+        String content = null;
+        for(int i=80401;i<=80404;i++){
+        	open(baseUrl + "/account/gameBlock.ct");
+            $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+            $(".fa-chevron-down", 0).click();
+            $("li[data-key='0804']").click();
+            $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+            $(".fa-chevron-down", 1).click();
+            $("li[data-key='0" + i + "']").click();
+            $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0");
+            $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, "+ TestBrowser);
+            $(".ac_btn_text", 0).click();
+            switch(i){
+	  		case 80401:
+		  		content = "Three world";
+		  		break;
+	  		case 80402:
+	  			content = "liberation";
+		  		break;
+	  		case 80403:
+	  			content = "Training";
+		  		break;
+	  		case 80404:
+	  			content = "PvP";
+		  		break;
+	  		}
+            System.out.println(TestBrowser + " content Block : " + content +" : Pass");
+        }
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0804']").click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 1).click();
+        $("li[data-key='080405']").click();
+        $(".ac_btn_text").waitUntil(text("제재"), 3000);
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " content UnBlock : Pass");
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0805']").click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 1).click();
+        $("li[data-key='080501']").click();
+        $(".ac_btn_text").waitUntil(text("제재"), 3000);
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " pay Block : Pass");
+        open(baseUrl + "/account/gameBlock.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 0).click();
+        $("li[data-key='0805']").click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".fa-chevron-down", 1).click();
+        $("li[data-key='080502']").click();
+        $(".ac_btn_text").waitUntil(text("제재"), 3000);
+        $("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0");
+        $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, "+ TestBrowser);
+        $(".ac_btn_text", 0).click();
+        System.out.println(TestBrowser + " pay UnBlock : Pass");
+        for(int i=80602;i<=80604;i++){ //일반 채팅 금지 버그있어서 80602부터
+        	open(baseUrl + "/account/gameBlock.ct");
+            $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+            $(".fa-chevron-down", 0).click();
+            $("li[data-key='0806']").click();
+            $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+            $(".fa-chevron-down", 1).click();
+            $("li[data-key='0" + i + "']").click();
+            $(".ac_btn_text").waitUntil(text("제재"), 3000);
+            if(i == 80601){
+            	$("textarea[name=blockForm]").setValue(accountKey + "");
+                $("input[name=remark]").setValue("ak:" + accountKey + ""+ TestBrowser);	
+            } else if (i == 80602){
+            	$("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 3, 0, 4");
+                $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, ch:3, time:0, len:4, "+ TestBrowser);	
+            } else if (i == 80603){
+            	$("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 3, 0, 4");
+                $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, ch:3, time:0, len:4, "+ TestBrowser);
+            } else if (i == 80604){
+            	$("textarea[name=blockForm]").setValue(accountKey + ", 2, 1, 0");
+                $("input[name=remark]").setValue("ak:" + accountKey + ", job:2, sev:1, time:0, "+ TestBrowser);
+            }
+            $(".ac_btn_text", 0).click();
+	  		switch(i){
+	  		case 80601:
+	  			content = "normal Chat Block"; //버그
+		  		break;
+	  		case 80602:
+	  			content = "Chat CD Block";
+		  		break;
+	  		case 80603:
+	  			content = "Chat Silence Block";
+		  		break;
+	  		case 80604:
+	  			content = "Chat UnBlock";
+	  		}
+            System.out.println(TestBrowser + " " + content + "  : Pass");
+        }
+        for(int i=80701;i<=80703;i++){
+            open(baseUrl + "/account/gameBlock.ct");
+            $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+            $(".fa-chevron-down", 0).click();
+            $("li[data-key='0807']").click();
+            $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+            $(".fa-chevron-down", 1).click();
+            $("li[data-key='0" + i +"']").click();
+            $(".ac_btn_text").waitUntil(text("제재"), 3000);
+            if(i < 80703){
+                $("textarea[name=blockForm]").setValue(accountKey + ", 1, 0");
+                $("input[name=remark]").setValue("ak:" + accountKey + ", sev:1, time:0, "+ TestBrowser);
+            }
+            $("textarea[name=blockForm]").setValue(accountKey + ", 1");
+            $("input[name=remark]").setValue("ak:" + accountKey + ", sev:1, "+ TestBrowser);
+            $(".ac_btn_text", 0).click();
+            switch(i){
+	  		case 80701:
+	  			content = "send";
+		  		break;
+	  		case 80702:
+	  			content = "receive";
+		  		break;
+	  		case 80703:
+	  			content = "Un";
+		  		break;
+            }
+            System.out.println(TestBrowser + " mail " + i + " Block : Pass");
+        }
+    }
+	@Test(priority = 1)
+	public void clan() {
+        open(baseUrl + "/clan/clanList.ct");
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        System.out.println(TestBrowser + " clan List : Pass");
+        $(".ac_btn_text", 1).click();
+        $(".menu-title").waitUntil(text("전체 메뉴"), 3000);
+        $(".ac_btn_text", 0).click();
+        $(".tmp_title").waitUntil(text("전체 메뉴"), 3000);
+        
+    }
+	@AfterClass
+	public void afterTest() {
+		closeWebDriver();
+	}
+}

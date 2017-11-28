@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Convert local variable &apos;herowarzTest.E_community_d_collection().liveCategory&apos; in &apos;herowarzTest.E_community_d_collection()&apos; to field&#x0D;&#x0A;- Original project: &apos;Selenium&apos;&#x0D;&#x0A;- Original element: &apos;herowarzTest.E_community_d_collection().liveCategory&apos;&#x0D;&#x0A;- Field name: &apos;liveCategory&apos;&#x0D;&#x0A;- Initialize field in method&#x0D;&#x0A;- Declared visibility: &apos;private&apos;" description="Convert local variable &apos;liveCategory&apos; to field" final="false" flags="2" id="org.eclipse.jdt.ui.promote.temp" initialize="1" input="/src&lt;{herowarzTest.java" name="liveCategory" selection="25383 23" stamp="1497589458414" static="false" version="1.0" visibility="2"/>
+</session>

@@ -1,0 +1,292 @@
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.fail;
+
+import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+ 
+public class rctTestNG {
+	private static String TestBrowser;
+	private static StringBuffer verificationErrors = new StringBuffer();
+	private static String CHROMEDRIVER_FILE_PATH;
+	private static String FIREFOXDRIVER_FILE_PATH;
+	private static String INTERNETEXPLORER_FILE_PATH;
+  	private static JavascriptExecutor js; 
+ 	private static HttpURLConnection huc;
+  	private static int respCode;
+    private static String baseUrl;
+    private static String accountKey;
+    private static String startAt; 
+    private static String endAt;  
+    private static String startAt1; 
+    private static String endAt1;  
+	public WebDriver drivers;
+	public static WebDriver driver;
+	public String URL, Node;
+	protected ThreadLocal<RemoteWebDriver> threadDriver = null;
+ 
+	@Parameters("browser")
+	@BeforeTest
+	public void launchbrowser(String browser) throws MalformedURLException {
+		String URL = "https://rct-d-p.astorm.com/";
+		js = (JavascriptExecutor) driver;   
+ 
+		if (browser.equalsIgnoreCase("chrome")) {
+			System.out.println(" Executing on CHROME");
+			DesiredCapabilities cap = DesiredCapabilities.chrome();
+			cap.setBrowserName("chrome");
+			String Node = "http://10.10.105.228:5555/wd/hub";
+			drivers = new RemoteWebDriver(new URL(Node), cap);
+			drivers.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+ 
+			// Launch website
+			drivers.navigate().to(URL);
+			//drivers.manage().window().maximize();
+		} else if (browser.equalsIgnoreCase("firefox")) {
+			System.out.println(" Executing on FireFox");
+			String Node = "http://10.10.105.228:5556/wd/hub";
+			DesiredCapabilities cap = DesiredCapabilities.firefox();
+			cap.setBrowserName("firefox");
+ 
+			drivers = new RemoteWebDriver(new URL(Node), cap);
+			// Puts an Implicit wait, Will wait for 10 seconds before throwing
+			// exception
+			drivers.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+ 
+			// Launch website
+			driver.navigate().to(URL);
+			//driver.manage().window().maximize();
+		} /*else if (browser.equalsIgnoreCase("ie")) {
+			System.out.println(" Executing on IE");
+			DesiredCapabilities cap = DesiredCapabilities.internetExplorer();
+			cap.setBrowserName("ie");
+			String Node = "http://10.10.105.228:5557/wd/hub";
+			drivers = new RemoteWebDriver(new URL(Node), cap);
+			drivers.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+ 
+			// Launch website
+			drivers.navigate().to(URL);
+			//driver.manage().window().maximize();
+		} */else {
+			throw new IllegalArgumentException("The Browser Type is Undefined");
+		}
+	}
+	 //@BeforeClass
+	    public static void setUp() throws Exception {
+	  		TestBrowser = "chrome";
+	  		CHROMEDRIVER_FILE_PATH = "D:/Selenium/driver/chromedriver.exe"; //크롬 드라이버 파일 경로
+	  		FIREFOXDRIVER_FILE_PATH = "D:/Selenium/driver/geckodriver.exe"; //파이어폭스 드라이버 파일 경로
+	  		INTERNETEXPLORER_FILE_PATH = "D:/Selenium/driver/IEDriverServer32.exe"; //IE 드라이버 파일 경로  		
+	  		
+	  		if(TestBrowser.equals("chrome")){
+	  		//테스트 브라우저를 크롬으로 설정
+	  	  		System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_FILE_PATH);
+	  	  		driver = new ChromeDriver();
+	  		} else if (TestBrowser.equals("firefox")) {
+	  	  		System.setProperty("webdriver.gecko.driver", FIREFOXDRIVER_FILE_PATH);
+	  	  		driver = new FirefoxDriver();
+	  		} else if (TestBrowser.equals("ie")) {
+	  			System.setProperty("webdriver.ie.driver", INTERNETEXPLORER_FILE_PATH);
+	  	  		driver = new InternetExplorerDriver();
+	  		}
+	  		driver.manage().window().setSize(new Dimension(1200, 1400));
+	        
+	  		//javaScript를 쓸 수 있도록 해줌
+	        js = (JavascriptExecutor) driver;       
+	        baseUrl = "https://rct-d-p.astorm.com";
+	        accountKey = "350238";
+	        startAt = "2017.06.05 00:00:00";
+	        endAt = "2017.07.01 00:00:00";
+	        startAt1 = "2017-06-05 00:00:00";
+	        endAt1 = "2017-07-01 00:00:00";
+	    }
+	//프롬프트창 입력 후 확인
+	  	public static void sendKeyAlert(String statusText, String number) throws Exception {
+	  		try {
+		  		Thread.sleep(1000);
+		  		Alert alert=driver.switchTo().alert();
+		        String alertMessage=driver.switchTo().alert().getText();
+		        System.out.println (statusText + " : " + alertMessage);
+		        alert.sendKeys(number);
+		        alert.accept();
+		        Thread.sleep(1000);
+		  	} catch (NoAlertPresentException e) {
+				e.printStackTrace();
+			}
+	  	}
+	    
+	  	//alert 확인 처리
+	  	public static void acceptAlert(String statusText) throws Exception {
+	  		try {
+	  	  		Alert alert=driver.switchTo().alert();
+	  	        String alertMessage=driver.switchTo().alert().getText();
+	  	        System.out.println (statusText + " : " + alertMessage);
+	  	        alert.accept();
+	  	        Thread.sleep(1000);
+	  		} catch (NoAlertPresentException e) {
+	  			e.printStackTrace();
+	  		}
+	  	}
+	  	
+	  	//입력된 URL 정상 여부 확인
+	  	public static boolean brokenLinkCheck (String urlName, String urlLink){
+	        try {
+	            huc = (HttpURLConnection)(new URL(urlLink).openConnection());
+	            huc.setRequestMethod("HEAD");
+	            huc.connect();
+	            respCode = huc.getResponseCode();
+	            if(respCode >= 400 && respCode != 503){ //자료실 다이렉트x 다운로드 링크 503나서 예외처리 그래도 http코드는 볼수있게함
+	            	System.out.println("***** " + urlName +" : 링크 상태 HTTP : " + respCode + " *****");
+	            	fail();
+	            } else {
+	            	System.out.println(urlName +" : 링크 상태 HTTP : " + respCode);
+	            }
+	        } catch (MalformedURLException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+			return false;
+	    }
+	  	
+	  	//브라우저에 따라 새로고침 대기시간 변경
+	  	public static void refreshReady () throws Exception {
+	        if(TestBrowser.equals("chrome")){
+	        	Thread.sleep(1000);
+	        } else if (TestBrowser.equals("firefox")) {
+	            Thread.sleep(3000);        	
+	        } else if (TestBrowser.equals("ie")) {
+	        	Thread.sleep(6000);
+	        }
+	  	}
+	  	//window 스위칭용
+	  	public static void handleMultipleWindows(String windowTitle) { 
+	  		Set<String> windows = driver.getWindowHandles(); 
+	  		for (String window : windows) { 
+	  			driver.switchTo().window(window); 
+	  			if (driver.getTitle().contains(windowTitle)) { 
+	  				return; 
+				} 
+			} 
+		}
+	    
+	  	@Test
+	    public void A_Login() throws Exception {
+	    	//로그인
+	        //driver.get(baseUrl + "/login/form.ct");
+	        Thread.sleep(1000);
+	        //해당 메세지가 있으면 Pass
+	        assertTrue(driver.getPageSource().contains("User ID"));
+	        //해당 메세지가 있으면 Fail
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));        
+	        System.out.println("로그인 페이지 : Pass");
+	        js.executeScript("$('input[name=j_username]').prop('value', 'apzz0928')");
+	        js.executeScript("$('input[name=j_password]').prop('value', 'qordlf!@34')");
+	        js.executeScript("$('.ac_btn_text')[0].click();");
+	        System.out.println("로그인 : Pass");
+	        Thread.sleep(1000);        
+	    }
+	  	
+	    @Test
+	    public void B_lang_change() throws Exception {
+	    	driver.get(baseUrl + "/common/locale/ko");
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+	        assertTrue(driver.getPageSource().contains("true"));
+	        System.out.println("언어변경 : Pass");
+	        Thread.sleep(1000);
+	        driver.get(baseUrl);
+	        Thread.sleep(1000);
+		}
+	    
+	    @Test
+	    public void C_gameMng_A_sendMail() throws Exception {
+	        driver.get(baseUrl + "/gmcmd/sendMailForm.ct");
+	        refreshReady();
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+	        assertTrue(driver.getPageSource().contains("특정 유저에게 우편을 발송하는 기능입니다."));
+	        System.out.println("게임 관리 > 우편 전송 > 페이지 접근 : Pass");
+	        driver.findElement(By.xpath("//div[@id='sk']/div/a/i")).click();
+	        driver.findElement(By.cssSelector("ul.normal > li.selected")).click();
+	        js.executeScript("$('input[name=recvAccountKey]').val('350238');");
+	        js.executeScript("$('input[name=sendNickName]').val('HerowarzTest');");
+	        js.executeScript("$('input[name=mailTitle]').val('우편 제목입니다.');");
+	        js.executeScript("$('textarea[name=mailContents]').val('우편 내용입니다.');");
+	        js.executeScript("$('input[name=itemCode]').val('500001');");
+	        js.executeScript("$('input[name=itemCount]').val('1');");
+	        js.executeScript("$('input[name=gold]').val('100');");
+	        js.executeScript("$('input[name=reason]').val('우편 테스트 입니다.');");
+	        js.executeScript("$('.ac_btn_text')[1].click()");
+	        Thread.sleep(1000);
+	        assertTrue(driver.getPageSource().contains("GM 명령이 호출 되었습니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        System.out.println("게임 관리 > 우편 전송 > 전송 : Pass");
+	        refreshReady();
+	        js.executeScript("$('input[name=keyward]').val('검색어 입니다.');");
+	        js.executeScript("$('.ac_btn_text')[2].click()");
+	        Thread.sleep(1000);
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+	        System.out.println("게임 관리 > 우편 전송 > 검색 : Pass");
+	    }
+ 
+	//@Test
+	public void calculatepercent() {
+		// Click on Math Calculators
+		driver.findElement(By.xpath("//a[contains(text(),'Math')]")).click();
+		// Click on Percent Calculators
+		driver.findElement(
+				By.xpath("//a[contains(text(),'Percentage Calculator')]"))
+				.click();
+		// Enter value 17 in the first number of the percent Calculator
+		driver.findElement(By.id("cpar1")).sendKeys("17");
+		// Enter value 35 in the second number of the percent Calculator
+		driver.findElement(By.id("cpar2")).sendKeys("35");
+ 
+		// Click Calculate Button
+		driver.findElement(
+				By.xpath("(//input[contains(@value,'Calculate')])[1]")).click();
+		// Get the Result Text based on its xpath
+		String result = driver.findElement(
+				By.xpath(".//*[@id='content']/p[2]/font/b")).getText();
+		// Print a Log In message to the screen
+		System.out.println(" The Result is " + result);
+		if (result.equals("5.95")) {
+			System.out.println(" The Result is Pass");
+		} else {
+			System.out.println(" The Result is Fail");
+		}
+	}
+ 
+	@AfterClass
+    public static void tearDown() throws Exception {
+    	//테스트 완료 3초 후 브라우저 종료
+        Thread.sleep(3000);
+    	//driver.close();  //driver.quit() 사용시 오류나는 경우 있음
+        String verificationErrorString = verificationErrors.toString();
+        if (!"".equals(verificationErrorString)) {
+            fail(verificationErrorString);
+        }
+    }
+}

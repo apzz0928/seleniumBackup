@@ -1,0 +1,654 @@
+ 
+import java.util.Set;
+
+import org.junit.*;
+
+import static org.junit.Assert.*;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+//import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.junit.runners.MethodSorters; //Method sort를 위해 추가
+import org.openqa.selenium.JavascriptExecutor; //js를 사용하기 위해 추가
+import org.openqa.selenium.Alert;
+ 
+ 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class herowarzTest {
+	private static WebDriver driver;
+    	private static StringBuffer verificationErrors = new StringBuffer();
+    	private static String CHROMEDRIVER_FILE_PATH;
+      	private static JavascriptExecutor js; 
+      	private static String baseUrl;
+      	private static String liveUrl;
+      	private static String devUrl;
+      	
+      	//alert 확인 처리
+      	public static void acceptAlert(String statusText) throws Exception {
+      		Alert alert=driver.switchTo().alert();
+            String alertMessage=driver.switchTo().alert().getText();
+            System.out.println (statusText + " : " + alertMessage);
+            alert.accept();
+      	};
+      	//alert 취소 처리
+      	public static void dismissAlert(String statusText) throws Exception {
+      		Alert alert=driver.switchTo().alert();
+            String alertMessage=driver.switchTo().alert().getText();
+            System.out.println (statusText + " : " + alertMessage);
+            alert.accept();
+      	};
+      	//프롬프트창 입력 후 확인
+      	public static void sendKeyAlert(String statusText, String number) throws Exception {
+      		Alert alert=driver.switchTo().alert();
+            String alertMessage=driver.switchTo().alert().getText();
+            System.out.println (statusText + " : " + alertMessage);
+            alert.sendKeys(number);
+            alert.accept();
+      	};
+      	//window 스위칭용
+      	public static void handleMultipleWindows(String windowTitle) { 
+      		Set<String> windows = driver.getWindowHandles(); 
+      		for (String window : windows) { 
+      			driver.switchTo().window(window); 
+      			if (driver.getTitle().contains(windowTitle)) { 
+      				return; 
+  				} 
+  			} 
+  		}
+      	//커뮤니티 글쓰기
+      	public static void boardWrite(String Category, String subCategory) throws Exception{
+      		if(subCategory.equals("")){
+      			new Select(driver.findElement(By.id("cmGroupList"))).selectByVisibleText(Category);
+          		System.out.println ("구분 선택 > Pass");
+          	    js.executeScript("$('input[name=title]').prop('value', '님들 질문있어요')");
+          		System.out.println ( Category + "제목 입력 > Pass");
+          	    //driver.findElement(By.cssSelector("button.se2_photo.ico_btn")).click();
+          	    js.executeScript("$('.uid_smarteditor_area iframe').contents().find('iframe').contents().find('body').html('님들 요즘 복귀할만한가여?');");
+          		System.out.println ( Category + "내용 입력 > Pass");
+          		Thread.sleep(1000);
+          	    js.executeScript("$('.uid_smarteditor_area iframe').contents().find('.se2_multy > li > button > span:eq(0)').click()");
+          	    System.out.println ("이미지 업로드 버튼 클릭 > Pass");
+          	    handleMultipleWindows("이미지 업로드 :: SmartEditor2");
+          		System.out.println ("자식 윈도우로 포커스 변경 > Pass");
+          	    driver.findElement(By.id("uploadInputBox")).sendKeys("C:\\Users\\Administrator\\Desktop\\black.jpg");
+          	    driver.findElement(By.id("btn_confirm")).click();
+          	    handleMultipleWindows(" :: 액션중독! - 최강의군단");
+          		System.out.println ("부모 윈도우로 포커스 변경 > Pass");
+          		Thread.sleep(2000);
+          	    js.executeScript("$('.btn-small')[1].click();");
+      		} else {
+      			new Select(driver.findElement(By.id("cmGroupList"))).selectByVisibleText(Category);
+          		System.out.println ("구분 선택 > Pass");
+          	    new Select(driver.findElement(By.id("cateDepth1"))).selectByVisibleText(subCategory);
+          		System.out.println ("1차 카테고리 선택 > Pass");
+          		js.executeScript("$('input[name=title]').prop('value', '님들 질문있어요')");
+          		js.executeScript("$('.uid_smarteditor_area iframe').contents().find('iframe').contents().find('body').html('님들 요즘 복귀할만한가여?');");
+        		//js.executeScript("var org = new Array();org.push('html 내용');oEditors.getById['ir1'].exec('PASTE_HTML', org);");
+        		js.executeScript("$('.btn-small')[1].click();");
+      		}      		
+      	};
+      	
+      	//댓글 작성
+      	public static void commentWrite(String comment) throws Exception {
+        	js.executeScript("$('.uid_comment_writesave').click();");
+        	acceptAlert("댓글 미입력 메세지");
+        	js.executeScript("$('textarea').prop('value', '기본 댓글 작성');");
+        	js.executeScript("$('.uid_comment_writesave').click();");
+        	System.out.println("커뮤니티 > " + comment + " > 댓글 작성 : Pass");
+        	Thread.sleep(1000);
+      	}
+      	//대댓글 작성
+      	public static void commentWrite2(String Recomment) throws Exception {
+        	js.executeScript("$('.uid_comment_reply')[0].click();");
+        	js.executeScript("$('textarea[name=content]').eq(1).prop('value', '기본 대댓글 작성');");
+        	js.executeScript("$('.uid_comment_writesave').eq(1).click();");
+        	System.out.println("커뮤니티 > "+ Recomment +" > 대댓글 작성 : Pass");
+        	Thread.sleep(1000);
+      	}
+      	//댓글 삭제
+      	public static void delComment(String delComment) throws Exception {
+      		js.executeScript("$('.uid_comment_delete')[0].click();");
+        	dismissAlert("댓글삭제 confirm 취소");
+        	js.executeScript("$('.uid_comment_delete')[0].click();");
+        	acceptAlert("댓글삭제 confirm 확인");
+        	System.out.println("커뮤니티 > "+ delComment +" > 댓글 삭제 : Pass");
+        	Thread.sleep(1000);
+      	}
+      	//최고군
+      	public static void like(String like) throws Exception {
+        	js.executeScript("$('.uid_comment_like')[0].click();");
+        	System.out.println("커뮤니티 > " + like + " > 최고군 : Pass");
+    	}      	
+      	
+    @BeforeClass
+    public static void setUp() throws Exception {
+ 
+        CHROMEDRIVER_FILE_PATH = "D:/Selenium/chromedriver.exe"; //크롬 드라이버 파일 경로
+        //테스트 브라우저를 크롬으로 설정
+        System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_FILE_PATH);
+        driver = new ChromeDriver();        
+        //javaScript를 쓸 수 있도록 해줌
+        js = (JavascriptExecutor) driver;
+        baseUrl = "http://www.d.p.herowarz.com";
+        liveUrl = "http://www.herowarz.com";
+        devUrl = "http://www.d.p.herowarz.com";
+        /*
+        free = "24";
+        target = "18";
+        getItem = "19";
+        collection = "20";
+        fanArt = "21";
+        */
+    }
+ 
+    @Test
+    public void A_Login() throws Exception {
+    	driver.get(baseUrl + "/index.main");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));  
+    	assertTrue(driver.getPageSource().contains("아이디 저장"));
+    	System.out.println("메인페이지 > 접근 : Pass");    	
+    	if(baseUrl.equals(liveUrl)){
+    		js.executeScript("$('.uid_login_id').val('apzz0928');");
+    	} else {
+    		js.executeScript("$('.uid_login_id').val('영권1240');");
+    	}
+    	js.executeScript("$('.uid_login_password').val('qordlf12');");
+    	Thread.sleep(1000);    	
+    	js.executeScript("$('.uid_login_login').eq(0).click();");
+    	Thread.sleep(1000);
+    	assertTrue(driver.getPageSource().contains("마이페이지"));
+    	System.out.println("메인페이지 > 로그인 : Pass");
+    	Thread.sleep(1000);
+    }
+    
+    ////@Test
+    public void B_recent_a_notice() throws Exception {
+    	//driver.get(baseUrl + "/recent/notice/list.hero");
+    	//gnb에서 새소식 > 공지사항 선택
+    	js.executeScript("$('.gnb-list > .list-recent > .notice > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));  
+    	assertTrue(driver.getPageSource().contains("[공지]"));
+        System.out.println("새소식 > 공지사항 > 리스트 : Pass");
+    	js.executeScript("$('.subject')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        System.out.println("새소식 > 공지사항 > 상세보기 : Pass");
+        Thread.sleep(1000);
+    }
+ 
+    ////@Test
+    public void B_recent_b_update() throws Exception {
+    	js.executeScript("$('.gnb-list > .list-recent > .update > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));  
+    	assertTrue(driver.getPageSource().contains("업데이트 안내"));
+        System.out.println("새소식 > 업데이트 > 리스트 : Pass");
+    	js.executeScript("$('.view-h-txt')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다.")); 
+        System.out.println("새소식 > 업데이트 > 상세보기 : Pass");
+        Thread.sleep(1000);
+    }
+    
+    ////@Test
+    public void B_recent_c_avatarsale() throws Exception {
+    	js.executeScript("$('.gnb-list > .list-recent > .event-store > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));  
+    	assertTrue(driver.getPageSource().contains("패키지 자세히 보기"));
+        System.out.println("새소식 > 백화점 소식 > 패키지 자세히 보기 : Pass");
+    	js.executeScript("$('#uid_mtab_link > ul > .gift > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다.")); 
+        js.executeScript("$('.btn > a')[0].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        js.executeScript("$('.btn-close')[2].click();");
+        js.executeScript("$('.uid_avatarsale_disable_btn')[0].click();");
+        Thread.sleep(1000);
+        acceptAlert("2개 사은품 수령 불가 메세지");
+        js.executeScript("$('.uid_avatarsale_disable_btn')[1].click();");
+        Thread.sleep(1000);
+        acceptAlert("3개 사은품 수령 불가 메세지");
+        js.executeScript("$('.uid_avatarsale_disable_btn')[2].click();");
+        Thread.sleep(1000);
+        acceptAlert("4개 사은품 수령 불가 메세지");
+        System.out.println("새소식 > 백화점 소식 > 사은품 안내 : Pass");
+        Thread.sleep(1000);
+    }
+    
+    ////@Test
+    public void B_recent_d_eventList() throws Exception {
+    	driver.get(baseUrl);
+    	js.executeScript("$('.gnb-list > .list-recent > .event > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("진행중인 이벤트"));
+        System.out.println("새소식 > 이벤트 > 리스트 : Pass");
+        js.executeScript("$('.tab-block > a')[1].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("행운의 주인공을 확인해보세요!"));
+        System.out.println("새소식 > 이벤트 > 당첨자보기 : Pass");
+        Thread.sleep(1000);        
+    }
+    
+    ////@Test
+    public void B_recent_e_secretNote() throws Exception {
+    	js.executeScript("$('.gnb-list > .list-recent > .secret > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("편]"));
+        System.out.println("새소식 > 시크릿노트 > 리스트 : Pass");
+        js.executeScript("$('.board-gallery-list > ul > li > a')[0].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("조회"));
+        System.out.println("새소식 > 시크릿노트 > 상세보기 : Pass");
+        Thread.sleep(1000);        
+    }
+    
+    ////@Test
+    public void B_recent_f_pinkDiary() throws Exception {
+    	js.executeScript("$('.nav-left > .reset-ua > li > a')[5].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("조회"));
+        System.out.println("새소식 > 핑크다이어리 > 상세보기 : Pass");
+        driver.get(baseUrl + "/community/PinkDiary/list.hero");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("검색"));
+        System.out.println("새소식 > 시크릿노트 > 리스트 : Pass");
+        Thread.sleep(1000);        
+    }
+    
+    ////@Test
+    public void B_recent_g_costumePlay() throws Exception {
+    	js.executeScript("$('.gnb-list > .list-recent > .cospre > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("검색"));
+        System.out.println("새소식 > 최강코스프레 > 리스트 : Pass");
+        js.executeScript("$('.thumb > img')[4].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("바리공주"));
+        System.out.println("새소식 > 최강코스프레 > 상세보기 : Pass");
+        Thread.sleep(1000);        
+    }
+
+    ////@Test
+    public void B_recent_h_herowarzTv() throws Exception {
+    	js.executeScript("$('.nav-left > .reset-ua > li > a')[7].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("검색"));
+        System.out.println("새소식 > 최군TV > 리스트 : Pass");
+        js.executeScript("$('.row-notice > .cell-subject > a')[0].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("조회"));
+        System.out.println("새소식 > 최군TV > 상세보기 : Pass");
+        Thread.sleep(1000);        
+    }
+    
+    //@Test
+    public void C_about_a_herowarz() throws Exception {
+    	driver.get(baseUrl + "/about/herowarz.hero");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("홈페이지 바로가기"));
+        System.out.println("게임소개 > 게임소개 : Pass");
+        Thread.sleep(1000);
+    }
+    
+    //@Test
+    public void C_about_b_character() throws Exception {
+    	js.executeScript("$('.inner > a')[0].click();");
+    	Thread.sleep(1000);
+    	assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("COPYRIGHT ⓒ A.STORM. ALL RIGHTS RESERVED."));
+        System.out.println("게임소개 > 캐릭터 소개  > 캐릭터 리스트 > RPG : Pass");
+        js.executeScript("$('.item-rpg > a')[0].click();");
+        Thread.sleep(1000);
+    	assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("닉네임"));
+        System.out.println("게임소개 > 캐릭터 소개  > 상세보기 > RPG : Pass");
+        Thread.sleep(1000);
+        js.executeScript("$('#gnb > ul > li > a')[1].click();");
+        Thread.sleep(1000);
+        js.executeScript("$('.index-tab > a')[1].click();");
+        Thread.sleep(1000);
+    	assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("COPYRIGHT ⓒ A.STORM. ALL RIGHTS RESERVED."));
+        System.out.println("게임소개 > 캐릭터 소개  > 리스트 > AOS : Pass");
+        js.executeScript("$('.item-aos > a')[0].click();");
+        Thread.sleep(2500);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("대표스킬"));
+        System.out.println("게임소개 > 캐릭터 소개  > 상세보기 > AOS : Pass");
+        js.executeScript("$('#layerPvp > .btn-close').click()");
+        Thread.sleep(1000);
+        js.executeScript("$('.index-tab > a')[2].click();");
+        Thread.sleep(2500);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("COPYRIGHT ⓒ A.STORM. ALL RIGHTS RESERVED."));
+        System.out.println("게임소개 > 캐릭터 소개  > 리스트 > SIDEKICK : Pass");
+        if(baseUrl.equals(liveUrl)){
+        	js.executeScript("$('.list > ul > .item-sidekick > a')[0].click();");
+            Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("획득방법"));
+            System.out.println("게임소개 > 캐릭터 소개  > 상세보기 > SIDEKICK : Pass");
+            js.executeScript("$('#layerSidekick > .btn-close').click()");
+        }
+    	Thread.sleep(1000);
+    }
+    
+    //@Test
+    public void C_about_c_map() throws Exception {
+    	js.executeScript("$('#gnb > ul > li > a')[2].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("홈페이지 바로가기"));
+        System.out.println("게임소개 > 여행자 지도 > 리스트 : Pass");
+        Thread.sleep(1000);
+        js.executeScript("$('map > area')[10].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("신이 다니는 어둠의 길"));
+        js.executeScript("$('#content-third > button').click();");
+        System.out.println("게임소개 > 여행자 지도 > 상세보기 : Pass");
+    }
+    
+    //@Test
+    public void C_about_d_chronicle() throws Exception {
+    	js.executeScript("$('#gnb > ul > li > a')[3].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("COPYRIGHT ⓒ A.STORM. ALL RIGHTS RESERVED."));
+        System.out.println("게임소개 > 군단 연대기 : Pass");
+    	Thread.sleep(1000);
+    }
+    
+    //@Test
+    public void D_gameGuide_a_beginner() throws Exception {
+    	js.executeScript("$('h1 > a')[0].click();");
+    	Thread.sleep(1000);
+    	js.executeScript("$('.list-gameinfo > .beginner > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("신규선수 튜토리얼"));
+        System.out.println("게임정보 > 초보자 가이드 > 상세보기 : Pass");
+    	Thread.sleep(1000);
+    	js.executeScript("$('.view-util > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("스토리"));
+        System.out.println("게임정보 > 초보자 가이드 > 리스트 : Pass");
+        js.executeScript("$('.list-gameinfo > .gameguide > a')[0].click();");
+        Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("게임가이드 검색"));
+        System.out.println("게임정보 > 게임 가이드/스토리 > 리스트 : Pass");
+        Thread.sleep(1000);
+    }
+    
+    @Test
+    public void E_community_a_freeBoard() throws Exception {    	
+      	js.executeScript("$('.list-community > .free > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("수다"));
+        System.out.println("커뮤니티 > 자유 게시판 > 리스트 : Pass");
+    	Thread.sleep(1000);
+    	if(baseUrl.equals(liveUrl)){//Live에서는 특정 게시글에만 댓글 작성
+    		js.executeScript("$('select[name=type]').prop('value', '4')");
+        	js.executeScript("$('input[name=keyword]').prop('value', '줍줍')");
+        	js.executeScript("$('.btn-search').click();");
+        	Thread.sleep(1000);
+        	System.out.println("커뮤니티 > 자유 게시판 > 검색 : Pass");
+    	}
+    	js.executeScript("$('.cell-subject > a')[0].click();");
+    	Thread.sleep(1000);
+    	//댓글 작성
+    	commentWrite("자유 게시판");
+    	//최고군
+    	like("자유 게시판");
+    	//대댓글 작성
+    	commentWrite2("자유 게시판");
+    	//사라져 (본인 댓글에 사라져하면 삭제가 불가능, 대댓글에 사라져해도 삭제 불가능.. 다른 댓글에 하고싶지만 )
+    	/*
+    	js.executeScript("$('.uid_comment_blind')[1].click();");
+    	js.executeScript("$('#blindType-3').click();");
+    	js.executeScript("$('.uid_blindcomment_confirm').click();");
+    	dismissAlert("사라져 confirm 취소");
+    	js.executeScript("$('.uid_blindcomment_confirm').click();");
+    	acceptAlert("사라져 confirm 확인");
+    	acceptAlert("사라져 완료");
+    	*/
+    	//댓글 삭제
+    	delComment("자유 게시판");
+    	if(baseUrl.equals(liveUrl)){ //Live 자유게시판 글쓰기
+        	js.executeScript("$('.btn-small')[2].click();");
+        	Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("자유 게시판"));
+            System.out.println("커뮤니티 > 자유 게시판 > 글쓰기 페이지 : Pass");
+        	Thread.sleep(1000);
+        	boardWrite("자유 게시판", "수다");
+    		Thread.sleep(1000);
+    		acceptAlert("게시글 등록 완료 메세지");
+    		Thread.sleep(1000);
+    	} else if (baseUrl.equals(devUrl)) {
+    		driver.get(baseUrl + "/community/write.hero?code=FreeBoard");
+    		Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("자유 게시판"));
+            System.out.println("커뮤니티 > 자유 게시판 > 글쓰기 페이지 : Pass");
+    		Thread.sleep(1000);
+    		boardWrite("자유 게시판", "수다");
+    		Thread.sleep(1000);
+    		acceptAlert("게시글 등록 완료 메세지");
+    		Thread.sleep(1000);
+    	}    	
+    }
+    
+    @Test
+    public void E_community_b_strategy() throws Exception {
+    	js.executeScript("$('.list-community > .target > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("PVE 공략"));
+        System.out.println("커뮤니티 > 공략 게시판 > 리스트 : Pass");
+    	Thread.sleep(1000);
+    	Thread.sleep(1000);
+    	if(baseUrl.equals(liveUrl)){//Live에서는 특정 게시글에만 댓글 작성
+    		js.executeScript("$('select[name=type]').prop('value', '4')");
+        	js.executeScript("$('input[name=keyword]').prop('value', '나무가족')");
+        	js.executeScript("$('.btn-search').click();");
+        	Thread.sleep(1000);
+        	System.out.println("커뮤니티 > 공략 게시판 > 검색 : Pass");
+    	}
+    	js.executeScript("$('.cell-subject > a')[0].click();");
+    	Thread.sleep(1000);
+    	//댓글 작성
+    	commentWrite("공략 게시판");
+    	//최고군
+    	like("공략 게시판");
+    	//대댓글 작성
+    	commentWrite2("공략 게시판");
+    	//사라져 (본인 댓글에 사라져하면 삭제가 불가능, 대댓글에 사라져해도 삭제 불가능.. 다른 댓글에 하고싶지만 )
+    	/*
+    	js.executeScript("$('.uid_comment_blind')[1].click();");
+    	js.executeScript("$('#blindType-3').click();");
+    	js.executeScript("$('.uid_blindcomment_confirm').click();");
+    	dismissAlert("사라져 confirm 취소");
+    	js.executeScript("$('.uid_blindcomment_confirm').click();");
+    	acceptAlert("사라져 confirm 확인");
+    	acceptAlert("사라져 완료");
+    	*/
+    	//댓글 삭제
+    	delComment("공략 게시판");
+    	if(baseUrl.equals(liveUrl)){ //Live 자유게시판 글쓰기
+        	js.executeScript("$('.btn-small')[2].click();");
+        	Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("공략 게시판"));
+            System.out.println("커뮤니티 > 공략 게시판 > 글쓰기 페이지 : Pass");
+        	Thread.sleep(1000);
+        	boardWrite("공략 게시판", "기타");
+    		Thread.sleep(1000);
+    		acceptAlert("게시글 등록 완료 메세지");
+    		Thread.sleep(1000);
+    	} else if (baseUrl.equals(devUrl)) {
+    		driver.get(baseUrl + "/community/write.hero?code=Strategy");
+    		Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("공략 게시판"));
+            System.out.println("커뮤니티 > 공략 게시판 > 글쓰기 페이지 : Pass");
+    		Thread.sleep(1000);
+    		boardWrite("공략 게시판", "기타");
+    		Thread.sleep(1000);
+    		acceptAlert("게시글 등록 완료 메세지");
+    		Thread.sleep(1000);
+    	}
+    }
+    
+    @Test
+    public void E_community_c_getItem() throws Exception {
+    	js.executeScript("$('.list-community > .pick > a')[0].click();");
+    	Thread.sleep(1000);
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        assertTrue(driver.getPageSource().contains("득템 베스트"));
+        System.out.println("커뮤니티 > 득템 게시판 > 리스트 : Pass");
+    	Thread.sleep(1000);
+    	Thread.sleep(1000);
+    	if(baseUrl.equals(liveUrl)){//Live에서는 특정 게시글에만 댓글 작성
+    		js.executeScript("$('select[name=type]').prop('value', '4');");
+        	js.executeScript("$('input[name=keyword]').prop('value', '이탕');");
+        	js.executeScript("$('.btn-search').click();");
+        	Thread.sleep(1000);
+        	System.out.println("커뮤니티 > 자유 게시판 > 검색 : Pass");
+    	}
+    	js.executeScript("$('.thumb > a')[3].click();");
+    	Thread.sleep(1000);
+    	//댓글 작성
+    	commentWrite("득템 게시판");
+    	//최고군
+    	like("득템 게시판");
+    	//대댓글 작성
+    	commentWrite2("득템 게시판");
+    	//사라져 (본인 댓글에 사라져하면 삭제가 불가능, 대댓글에 사라져해도 삭제 불가능.. 다른 댓글에 하고싶지만 )
+    	/*
+    	js.executeScript("$('.uid_comment_blind')[1].click();");
+    	js.executeScript("$('#blindType-3').click();");
+    	js.executeScript("$('.uid_blindcomment_confirm').click();");
+    	dismissAlert("사라져 confirm 취소");
+    	js.executeScript("$('.uid_blindcomment_confirm').click();");
+    	acceptAlert("사라져 confirm 확인");
+    	acceptAlert("사라져 완료");
+    	*/
+    	//댓글 삭제
+    	delComment("득템 게시판");
+    	if(baseUrl.equals(liveUrl)){ //Live 게시판 글쓰기
+        	js.executeScript("$('.btn-small')[2].click();");
+        	Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("공략 게시판"));
+            System.out.println("커뮤니티 > 득템 게시판 > 글쓰기 페이지 : Pass");
+        	Thread.sleep(1000);
+    		boardWrite("득템 게시판", "");
+    		Thread.sleep(1000);
+    		acceptAlert("게시글 등록 완료 메세지");
+    		Thread.sleep(1000);
+    	} else if (baseUrl.equals(devUrl)) {
+    		driver.get(baseUrl + "/community/write.hero?code=GetItem");
+    		Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("득템 게시판"));
+            System.out.println("커뮤니티 > 득템 게시판 > 글쓰기 페이지 : Pass");
+    		Thread.sleep(1000);
+    		boardWrite("득템 게시판", "");
+    		Thread.sleep(1000);
+    		acceptAlert("게시글 등록 완료 메세지");
+    		Thread.sleep(1000);
+    	}
+    }
+    	
+    	@Test
+        public void E_community_d_collection() throws Exception {
+        	js.executeScript("$('.list-community > .collection > a')[0].click();");
+        	Thread.sleep(1000);
+            assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+            assertTrue(driver.getPageSource().contains("컬렉션 베스트"));
+            System.out.println("커뮤니티 > 스샷 게시판 > 리스트 : Pass");
+        	Thread.sleep(1000);
+        	Thread.sleep(1000);
+        	if(baseUrl.equals(liveUrl)){//Live에서는 특정 게시글에만 댓글 작성
+        		js.executeScript("$('select[name=type]').prop('value', '4');");
+            	js.executeScript("$('input[name=keyword]').prop('value', '이탕');");
+            	js.executeScript("$('.btn-search').click();");
+            	Thread.sleep(1000);
+            	System.out.println("커뮤니티 > 스샷 게시판 > 검색 : Pass");
+        	}
+        	js.executeScript("$('.thumb > a')[3].click();");
+        	Thread.sleep(1000);
+        	//댓글 작성
+        	commentWrite("스샷 게시판");
+        	//최고군
+        	like("스샷 게시판");
+        	//대댓글 작성
+        	commentWrite2("스샷 게시판");
+        	//사라져 (본인 댓글에 사라져하면 삭제가 불가능, 대댓글에 사라져해도 삭제 불가능.. 다른 댓글에 하고싶지만 )
+        	/*
+        	js.executeScript("$('.uid_comment_blind')[1].click();");
+        	js.executeScript("$('#blindType-3').click();");
+        	js.executeScript("$('.uid_blindcomment_confirm').click();");
+        	dismissAlert("사라져 confirm 취소");
+        	js.executeScript("$('.uid_blindcomment_confirm').click();");
+        	acceptAlert("사라져 confirm 확인");
+        	acceptAlert("사라져 완료");
+        	*/
+        	//댓글 삭제
+        	delComment("스샷 게시판");
+        	if(baseUrl.equals(liveUrl)){ //Live 게시판 글쓰기
+            	js.executeScript("$('.btn-small')[2].click();");
+            	Thread.sleep(1000);
+                assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+                assertTrue(driver.getPageSource().contains("공략 게시판"));
+                System.out.println("커뮤니티 > 득템 게시판 > 글쓰기 페이지 : Pass");
+            	Thread.sleep(1000);
+        		boardWrite("스샷 게시판", "");
+        		Thread.sleep(1000);
+        		acceptAlert("게시글 등록 완료 메세지");
+        		Thread.sleep(1000);
+        	} else if (baseUrl.equals(devUrl)) {
+        		driver.get(baseUrl + "/community/write.hero?code=Collection");
+        		Thread.sleep(1000);
+                assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+                assertTrue(driver.getPageSource().contains("컬렉션 게시판"));
+                System.out.println("커뮤니티 > 스샷 게시판 > 글쓰기 페이지 : Pass");
+        		Thread.sleep(1000);
+        		boardWrite("컬렉션 게시판", "");
+        		Thread.sleep(1000);
+        		acceptAlert("게시글 등록 완료 메세지");
+        		Thread.sleep(1000);
+        	}
+    }
+    
+    @AfterClass
+    public static void tearDown() throws Exception {
+    	Thread.sleep(2000);
+    	driver.close();  //driver.quit() 사용시 오류나는 경우 있음
+        String verificationErrorString = verificationErrors.toString();
+        if (!"".equals(verificationErrorString)) {
+            fail(verificationErrorString);
+        }
+    }
+}

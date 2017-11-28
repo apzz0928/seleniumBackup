@@ -1,0 +1,390 @@
+package AutomationTest;
+
+import org.junit.*;
+
+import static org.junit.Assert.*;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.junit.runners.MethodSorters;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class rctTest {
+    private static WebDriver driver;
+    private static StringBuffer verificationErrors = new StringBuffer();
+    private static String CHROMEDRIVER_FILE_PATH;
+    private static String IEDRIVER_FILE_PATH;
+    private static String baseUrl;
+    private static String accountKey;
+ 
+    @BeforeClass
+    public static void setUp() throws Exception {
+ 
+        //크롬 드라이버 파일 경로
+        CHROMEDRIVER_FILE_PATH = "D:/Selenium/chromedriver.exe";
+        
+        //IE 드라이버 파일 경로
+        IEDRIVER_FILE_PATH = "D:/Selenium/IEDriverServer.exe";
+ 
+        
+        //테스트 브라우저를 크롬으로 설정
+        System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_FILE_PATH);
+        driver = new ChromeDriver();
+                
+        /*
+        //테스트 브라우저를 ie로 설정
+        System.setProperty("webdriver.ie.driver", IEDRIVER_FILE_PATH);
+        driver = new InternetExplorerDriver();
+        */
+        
+        //기본주소 설정
+        baseUrl = "https://rct-d-p.astorm.com";
+        
+        //기본ak 설정
+        accountKey = "350238";
+    }
+ 
+    //rct login test
+    @Test
+    public void A_Login() throws Exception {
+    	//로그인
+        driver.get(baseUrl + "/login/form.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        driver.findElement(By.name("j_username")).clear();
+        driver.findElement(By.name("j_username")).sendKeys("apzz0928");
+        driver.findElement(By.name("j_password")).clear();
+        driver.findElement(By.name("j_password")).sendKeys("qordlf!@34");
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        Thread.sleep(1000);
+        
+    }
+    
+    @Test
+    public void B_lang_change() throws Exception {
+    	//한국어로 언어 변경 후 메인으로 이동
+        driver.get(baseUrl + "/common/locale/ko");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        driver.get(baseUrl);
+        Thread.sleep(1000);
+    }
+    
+    //@Test
+    public void C_sendMail() throws Exception {
+    	//게임관리 > 우편 전송으로 이동
+        driver.get(baseUrl + "/gmcmd/sendMailForm.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //우편발송 기능 확인
+        driver.findElement(By.xpath("//div[@id='sk']/div/a/i")).click();
+        driver.findElement(By.cssSelector("ul.normal > li.selected")).click();
+        driver.findElement(By.name("recvAccountKey")).clear();
+        driver.findElement(By.name("recvAccountKey")).sendKeys("350238");
+        driver.findElement(By.name("sendNickName")).clear();
+        driver.findElement(By.name("sendNickName")).sendKeys("Herowarz");
+        driver.findElement(By.name("mailTitle")).clear();
+        driver.findElement(By.name("mailTitle")).sendKeys("우편 테스트");
+        driver.findElement(By.name("mailContents")).clear();
+        driver.findElement(By.name("mailContents")).sendKeys("내용입니다.");
+        driver.findElement(By.name("itemCode")).clear();
+        driver.findElement(By.name("itemCode")).sendKeys("500001");
+        driver.findElement(By.name("itemCount")).clear();
+        driver.findElement(By.name("itemCount")).sendKeys("1");
+        driver.findElement(By.name("gold")).clear();
+        driver.findElement(By.name("gold")).sendKeys("100");
+        driver.findElement(By.name("reason")).clear();
+        driver.findElement(By.name("reason")).sendKeys("우편 테스트 입니다.");
+        driver.findElement(By.xpath("(//button[@type='button'])[24]")).click();
+        //메세지 레이어 로딩까지 2초 대기 
+        Thread.sleep(2000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        //버튼 클릭하고 1초 대기
+        Thread.sleep(1000);
+    }
+    
+    //@Test
+    public void D_systemMessage() throws Exception {
+    	//게임관리 > 시스템 메세지로 이동
+        driver.get(baseUrl + "/gmcmd/systemMessageForm.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //시스템 메세지 기능 확인
+        driver.findElement(By.name("displayMessage")).clear();
+        driver.findElement(By.name("displayMessage")).sendKeys("selenium test");
+        driver.findElement(By.cssSelector("i.fa.fa-circle-o")).click();
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        //메세지 레이어 로딩까지 2초 대기 
+        Thread.sleep(2000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        //버튼 클릭하고 1초 대기
+        Thread.sleep(1000);
+    }
+    
+    //@Test
+    public void E_ingameNotice() throws Exception {
+    	//게임관리 > 인게임 공지로 이동
+        driver.get(baseUrl + "/gmcmd/ingameNotice.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //인게임 공지 등록
+        driver.findElement(By.name("name")).clear();
+        driver.findElement(By.name("name")).sendKeys("인게임 공지 테스트 입니다.");
+        driver.findElement(By.name("desc")).clear();
+        driver.findElement(By.name("desc")).sendKeys("테스트 공지 설명 입니다.");
+        driver.findElement(By.name("startAt")).click();
+        driver.findElement(By.name("startAt")).clear();
+        driver.findElement(By.name("startAt")).sendKeys("2017.06.05 00:00:00");
+        driver.findElement(By.cssSelector("button.btn-cancel.uid_calendar_time_cancel")).click();
+        driver.findElement(By.name("endAt")).click();
+        driver.findElement(By.name("endAt")).clear();
+        driver.findElement(By.name("endAt")).sendKeys("2017.06.06 00:00:00");
+        driver.findElement(By.xpath("(//button[@type='button'])[52]")).click();
+        driver.findElement(By.name("repeatTime")).clear();
+        driver.findElement(By.name("repeatTime")).sendKeys("5");
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.cssSelector("i.fa.fa-square-o")).click();
+        driver.findElement(By.name("message")).clear();
+        driver.findElement(By.name("message")).sendKeys("인게임 공지 테스트 입니다.");
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        //메세지 레이어 로딩까지 2초 대기 
+        Thread.sleep(2000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        //버튼 클릭하고 1초 대기
+        Thread.sleep(1000);        
+        //인게임 공지 삭제
+        driver.findElement(By.xpath("(//button[@type='button'])[26]")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        Thread.sleep(1000);
+    }
+
+    //@Test
+    public void F_kickUser() throws Exception {
+    	//게임관리 > kickUser로 이동
+        driver.get(baseUrl + "/gmcmd/kickUserForm.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //유저 강제 종료 확인
+        driver.get(baseUrl + "/gmcmd/kickUserForm.ct");
+        driver.findElement(By.xpath("//div[@id='sk']/div/a/i")).click();
+        driver.findElement(By.cssSelector("ul.normal > li.selected")).click();
+        driver.findElement(By.name("accountKey")).clear();
+        driver.findElement(By.name("accountKey")).sendKeys(accountKey);
+        driver.findElement(By.name("forbidTime")).clear();
+        driver.findElement(By.name("forbidTime")).sendKeys("0");
+        driver.findElement(By.name("reason")).clear();
+        driver.findElement(By.name("reason")).sendKeys("kickUser 테스트 입니다.");
+        //입력창 다 입력하고 1초 대기
+        Thread.sleep(1000);   
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        //메세지 레이어 로딩까지 2초 대기
+        Thread.sleep(2000);   
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        Thread.sleep(1000);   
+    }
+    
+    //@Test
+    public void G_shutDown() throws Exception {
+    	//게임관리 > 시스템 메세지로 이동
+        driver.get(baseUrl + "/gmcmd/shutDownForm.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //유저 강제 종료 확인
+        driver.get(baseUrl + "/gmcmd/kickUserForm.ct");
+        driver.findElement(By.xpath("//div[@id='sk']/div/a/i")).click();
+        driver.findElement(By.cssSelector("ul.normal > li.selected")).click();
+        driver.findElement(By.name("accountKey")).clear();
+        driver.findElement(By.name("accountKey")).sendKeys(accountKey);
+        driver.findElement(By.name("forbidTime")).clear();
+        driver.findElement(By.name("forbidTime")).sendKeys("0");
+        driver.findElement(By.name("reason")).clear();
+        driver.findElement(By.name("reason")).sendKeys("kickUser 테스트 입니다.");
+        //입력창 다 입력하고 1초 대기
+        Thread.sleep(1000);   
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        //메세지 레이어 로딩까지 2초 대기
+        Thread.sleep(2000);   
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        Thread.sleep(1000);   
+    }
+
+    //@Test
+    public void H_mailOut() throws Exception {
+    	//게임관리 > 우편 대량 발송으로 이동
+        driver.get(baseUrl + "/gmcmd/mailoutform.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //우편 대량 발송 확인
+        driver.findElement(By.xpath("//div[@id='sk']/div/a/i")).click();
+        driver.findElement(By.cssSelector("ul.including > li")).click();
+        driver.findElement(By.name("filedata")).sendKeys("C:\\Users\\Administrator\\Downloads\\템골드전부미첨부.xlsx");
+        driver.findElement(By.name("reason")).clear();
+        driver.findElement(By.name("reason")).sendKeys("우편 대량 발송 테스트 입니다.");
+        //입력창 다 입력하고 1초 대기
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        //메세지 레이어 로딩까지 1초 대기
+        Thread.sleep(1000); 
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        //우편 대량 발송 확인 페이지 로딩까지 3초 대기
+        Thread.sleep(3000);
+        driver.findElement(By.cssSelector("span.ac_btn_text.au_text_center")).click();
+        Thread.sleep(1000);   
+    }
+    
+    @Test
+    public void I_burningEvent() throws Exception {
+    	//게임관리 > 버닝 이벤트 관리로 이동
+        driver.get(baseUrl + "/event/burning/list.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //오류 수정 후 작성 필요
+    }
+    
+    //@Test
+    public void J_getServerStatus() throws Exception {
+    	//게임관리 > 서버 제어로 이동
+        driver.get(baseUrl + "/cache/getServerStatus.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //서버 제어 확인
+        driver.findElement(By.xpath("//input[@name='']")).click();
+        driver.findElement(By.xpath("//input[@name='']")).clear();
+        driver.findElement(By.xpath("//input[@name='']")).sendKeys("60");
+        driver.findElement(By.xpath("//div[@id='HC-IS_AUTO_SHUTDOWN.1']/div/a/i")).click();
+        driver.findElement(By.xpath("//div[4]/div/ul[2]/li[2]")).click();
+        driver.findElement(By.xpath("(//input[@name=''])[2]")).click();
+        driver.findElement(By.cssSelector("button.btn-today.uid_calendar_time_now")).click();
+        driver.findElement(By.cssSelector("button.btn-ok.uid_calendar_time_ok")).click();
+        driver.findElement(By.xpath("//div[@id='HC-MAINTENANCE_END_TIME.1']/div/div")).click();
+        driver.findElement(By.xpath("(//button[@type='button'])[37]")).click();
+        driver.findElement(By.xpath("(//button[@type='button'])[38]")).click();
+        driver.findElement(By.xpath("//div[@id='HC-XIGNCODE_TYPE.1']/div/a/i")).click();
+        driver.findElement(By.xpath("//div[5]/div/ul[2]/li[2]")).click();
+        //입력창 다 입력하고 1초 대기
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("button.ac_btn_inner")).click();
+        //상태 변경될동안 3초 대기
+        Thread.sleep(3000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        Thread.sleep(1000);
+    }
+    
+    @Test
+    public void K_getServerStatus() throws Exception {
+    	//게임관리 > 아이템 드랍 설정으로 이동
+        driver.get(baseUrl + "/event/limitdrop/confUploadForm.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //아이템 드랍 설정 확인       
+        
+    }
+    
+    @Test
+    public void L_ingameGuide() throws Exception {
+    	//게임관리 > 인게임 가이드 리스트로 이동
+        driver.get(baseUrl + "/gmcmd/ingameGuide/list.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //인게임 가이드 작성       
+        driver.findElement(By.xpath("(//button[@type='button'])[44]")).click();
+        driver.findElement(By.name("firstCategory")).clear();
+        driver.findElement(By.name("firstCategory")).sendKeys("인게임 가이드 테스트트");
+        driver.findElement(By.name("secondCategory")).clear();
+        driver.findElement(By.name("secondCategory")).sendKeys("소분류 입니다.");
+        driver.switchTo().frame(driver.findElement(By.tagName("iframe")));
+        driver.findElement(By.tagName("body")).clear();
+        driver.findElement(By.tagName("body")).sendKeys("내용 입니다.");
+        driver.findElement(By.name("order")).clear();
+        driver.findElement(By.name("order")).sendKeys("0");
+        //입력값 입력 후 1초 대기
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("(//button[@type='button'])[52]")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("button.ac_btn.uid_cancel_btn")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("(//button[@type='button'])[52]")).click();
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        driver.findElement(By.xpath("(//button[@type='button'])[15]")).click();
+        driver.findElement(By.name("firstCategory")).click();
+        driver.findElement(By.name("firstCategory")).clear();
+        driver.findElement(By.name("firstCategory")).sendKeys("수정합니다.");
+        driver.findElement(By.name("secondCategory")).clear();
+        driver.findElement(By.name("secondCategory")).sendKeys("수정합니다.");
+        driver.findElement(By.name("order")).clear();
+        driver.findElement(By.name("order")).sendKeys("0");
+        driver.findElement(By.xpath("(//button[@type='button'])[53]")).click();
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        driver.findElement(By.xpath("(//button[@type='button'])[16]")).click();
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+        driver.findElement(By.cssSelector("button.ac_btn.uid_ok_btn")).click();
+    }
+    
+    //@Test
+    public void M_onlineUserCountInfo() throws Exception {
+    	//게임관리 > 온라인 유저수 조회로 이동
+        driver.get(baseUrl + "/gmcmd/onlineUserCountInfo.ct");
+        Thread.sleep(3000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //아이템 드랍 설정 확인       
+        
+    }
+    
+    //@Test
+    public void N_slangForm() throws Exception {
+    	//게임관리 > 금칙어 관리로 이동
+        driver.get(baseUrl + "/gmcmd/slangForm.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //아이템 드랍 설정 확인       
+        
+    }
+    
+    //@Test
+    public void O_onlineUserCountInfo() throws Exception {
+    	//게임관리 > PvP스케줄 리스트로 이동
+        driver.get(baseUrl + "/event/pvpSchedule/settingList.ct");
+        Thread.sleep(1000);
+        //해당 메세지가 있으면 페이지 Fail
+        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+        //PvP스케줄 리스트 확인     
+        
+    }
+    
+    @AfterClass
+    public static void tearDown() throws Exception {
+    	//테스트 완료 2초 후 브라우저 종료
+        Thread.sleep(2000);;
+    	driver.close();  //driver.quit() 사용시 오류나는 경우 있음
+        String verificationErrorString = verificationErrors.toString();
+        if (!"".equals(verificationErrorString)) {
+            fail(verificationErrorString);
+        }
+    }
+}

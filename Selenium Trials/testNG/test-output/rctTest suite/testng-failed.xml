@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [rctTest suite]">
+  <test name="rctTest test(failed)">
+    <classes>
+      <class name="rctTest">
+        <methods>
+          <include name="D_authMng_C_groupListByAdmin"/>
+          <include name="tearDown"/>
+          <include name="setUp"/>
+        </methods>
+      </class> <!-- rctTest -->
+    </classes>
+  </test> <!-- rctTest test(failed) -->
+</suite> <!-- Failed suite [rctTest suite] -->

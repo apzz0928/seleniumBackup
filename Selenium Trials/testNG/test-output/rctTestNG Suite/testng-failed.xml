@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [rctTestNG Suite]" parallel="tests">
+  <test name="Firefox Example(failed)" parallel="tests">
+    <parameter name="browser" value="firefox"/>
+    <classes>
+      <class name="rctTestNG">
+        <methods>
+          <include name="closeBrowser"/>
+          <include name="launchbrowser"/>
+          <include name="A_Login"/>
+        </methods>
+      </class> <!-- rctTestNG -->
+    </classes>
+  </test> <!-- Firefox Example(failed) -->
+  <test name="Chrome Example(failed)" parallel="tests">
+    <parameter name="browser" value="chrome"/>
+    <classes>
+      <class name="rctTestNG">
+        <methods>
+          <include name="closeBrowser"/>
+          <include name="launchbrowser"/>
+          <include name="A_Login"/>
+        </methods>
+      </class> <!-- rctTestNG -->
+    </classes>
+  </test> <!-- Chrome Example(failed) -->
+</suite> <!-- Failed suite [rctTestNG Suite] -->

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;GridExample.java&apos; to &apos;GridExample.java&apos;&#x0D;&#x0A;- Original project: &apos;testNG&apos;&#x0D;&#x0A;- Destination element: &apos;GridExample.java&apos;&#x0D;&#x0A;- Original element: &apos;GridExample.java&apos;" description="Copy compilation unit" destination="/src&lt;{GridExample.java" element1="/src&lt;{GridExample.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1499658465484" units="1" version="1.0"/>
+</session>

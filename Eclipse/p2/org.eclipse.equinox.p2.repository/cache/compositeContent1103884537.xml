@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeMetadataRepository version='1.0.0'?>
+<repository name='Eclipse Modeling Project Release Site' type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository' version='1.0.0'>
+  <children size='15'>
+    <!--  EMF CDO -->
+    <child location='http://download.eclipse.org/modeling/emf/cdo/updates/releases/'/>
+    <!--  EMF Compare -->
+    <child location='http://download.eclipse.org/modeling/emf/updates/releases/'/>
+    <!--  EMF EMF (Core) and MDT XSD -->
+    <child location='http://download.eclipse.org/modeling/emf/emf/updates/2.6/'/>
+    <child location='http://download.eclipse.org/modeling/emf/emf/updates/2.7/'/>
+    <!--  EMFT Ecore Tools -->
+    <child location='http://download.eclipse.org/modeling/emft/ecoretools/updates/0.10/'/>
+    <!--  EMFT EEF -->
+    <child location='http://download.eclipse.org/modeling/emft/eef/updates/releases/'/>
+    <!--  EMFT MWE -->
+    <child location='http://download.eclipse.org/modeling/emft/mwe/updates/'/>
+    <!--  M2T Acceleo, JET -->
+    <child location='http://download.eclipse.org/modeling/m2t/updates/releases/'/>
+    <!--  M2T Xpand -->
+    <child location='http://download.eclipse.org/modeling/m2t/xpand/updates/'/>
+    <!--  MDT MoDisco -->
+    <child location='http://download.eclipse.org/modeling/mdt/modisco/updates/release/'/>
+    <!--  MDT OCL -->
+    <child location='http://download.eclipse.org/modeling/mdt/ocl/updates/releases/'/>            
+    <!--  MDT UML2 -->
+    <child location='http://download.eclipse.org/modeling/mdt/updates/releases/'/>
+    <child location='http://download.eclipse.org/modeling/mdt/uml2/updates/releases/'/>
+    <!--  MDT UML2 Tools -->
+    <child location='http://download.eclipse.org/modeling/mdt/uml2tools/updates/releases/'/>
+    <!--  TMF Xtext -->
+    <child location='http://download.eclipse.org/modeling/tmf/updates/'/>
+  </children>
+</repository>

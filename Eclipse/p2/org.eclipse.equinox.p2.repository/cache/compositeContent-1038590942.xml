@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><?compositeMetadataRepository version="1.0.0"?>
+
+<repository name="CDO 3.0 Releases" type="org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository" version="1.0.0">
+  <properties size="3">
+    <property name="p2.timestamp" value="1499670232899"/>
+    <property name="p2.compressed" value="false"/>
+    <property name="p2.mirrorsURL" value="http://www.eclipse.org/downloads/download.php?file=/modeling/emf/cdo/updates/releases/3.0&amp;amp;protocol=http&amp;amp;format=xml"/>
+  </properties>
+  <children size="6">
+    <child location="../../../drops/R20100614-1613"/>
+    <child location="../../../drops/R20100614-1613/categories"/>
+    <child location="../../../drops/R20100914-1022"/>
+    <child location="../../../drops/R20100914-1022/categories"/>
+    <child location="../../../drops/R20110215-2220"/>
+    <child location="../../../drops/R20110215-2220/categories"/>
+  </children>
+</repository>

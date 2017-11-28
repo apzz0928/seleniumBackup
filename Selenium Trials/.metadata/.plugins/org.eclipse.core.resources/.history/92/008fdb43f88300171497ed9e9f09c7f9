@@ -1,0 +1,282 @@
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.fail;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;	
+
+
+
+public class rctTestAuthMng_firefox {		
+	    private static WebDriver driver;
+		private static String TestBrowser;
+		private static JavascriptExecutor js;
+		private static String baseUrl, nodeURL;
+		private static StringBuffer verificationErrors = new StringBuffer();
+		private static HttpURLConnection huc;
+	  	private static int respCode;
+	    private static String startAt; 
+	    private static String endAt;  
+	    private static String accountKey;
+		
+		@BeforeClass
+		public void beforeTest() throws MalformedURLException {	
+	  		TestBrowser = "firefox";
+	  		if(TestBrowser.equals("chrome")){
+	  			baseUrl = "https://rct-d-p.astorm.com";
+		        nodeURL = "http://10.10.105.228:5555/wd/hub";
+		    	DesiredCapabilities cap = DesiredCapabilities.chrome();
+				cap.setBrowserName("chrome");
+				cap.setPlatform(Platform.WINDOWS);
+				driver = new RemoteWebDriver(new URL(nodeURL), cap);
+	  		} else if (TestBrowser.equals("firefox")) {
+	  			baseUrl = "https://rct-d-p.astorm.com";
+		        nodeURL = "http://10.10.105.228:5556/wd/hub";
+		    	DesiredCapabilities cap = DesiredCapabilities.firefox();
+				cap.setBrowserName("firefox");
+				cap.setPlatform(Platform.WINDOWS);
+				driver = new RemoteWebDriver(new URL(nodeURL), cap);
+	  		} else if (TestBrowser.equals("opera")) {
+	  			baseUrl = "https://rct-d-p.astorm.com";
+		        nodeURL = "http://10.10.105.228:5557/wd/hub";		        
+				DesiredCapabilities cap = DesiredCapabilities.operaBlink();
+				cap.setBrowserName("operaBlink");
+				cap.setPlatform(Platform.WINDOWS);
+	  		} else if (TestBrowser.equals("ie")) {
+	  			baseUrl = "https://rct-d-p.astorm.com";
+		        nodeURL = "http://10.10.105.228:5558/wd/hub";		        
+				DesiredCapabilities cap = DesiredCapabilities.internetExplorer();
+				cap.setBrowserName("internet explorer");
+				cap.setPlatform(Platform.WINDOWS);
+	  		}
+	  		//driver.manage().window().setSize(new Dimension(700, 900));
+	  		driver.manage().window().maximize();
+	  		js = (JavascriptExecutor) driver;   
+	        startAt = "2017.06.05 00:00:00";
+	        endAt = "2018.07.01 00:00:00";
+	        accountKey = "9000115";
+        }
+	  	public static void elementWait(String selector, String word){
+			WebDriverWait wait = new WebDriverWait(driver, 10);
+	  		switch(selector){
+	  		case "id":
+		  		wait.until(ExpectedConditions.elementToBeClickable(By.id(word)));
+		  		break;
+	  		case "class":
+		  		wait.until(ExpectedConditions.elementToBeClickable(By.className(word)));	  
+	  			break;
+	  		case "name":
+	  			wait.until(ExpectedConditions.elementToBeClickable(By.name(word)));
+	  			break;
+	  		case "css":
+		  		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(word)));	
+	  			break;
+	  		case "linkText":
+		  		wait.until(ExpectedConditions.elementToBeClickable(By.linkText(word)));	  	
+	  			break;
+	  		case "text":
+		  		wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText(word)));
+	  			break;
+	  		case "tagName":
+	  			wait.until(ExpectedConditions.elementToBeClickable(By.tagName(word)));
+	  			break;
+	  		}
+		}
+	  	public static void elementValueWait(String quarter, String word, String valueName){
+			WebDriverWait wait = new WebDriverWait(driver, 10);
+	  		switch(quarter){
+	  		case "id":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.id(word), valueName));
+		  		break;
+	  		case "class":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.className(word), valueName));
+	  			break;
+	  		case "name":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.name(word), valueName));
+	  			break;
+	  		case "css":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.cssSelector(word), valueName));	
+	  			break;
+	  		case "linkText1":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.linkText(word), valueName));	
+	  			break;
+	  		case "text":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.partialLinkText(word), valueName));
+	  			break;
+	  		case "tagName":
+		  		wait.until(ExpectedConditions.textToBePresentInElementValue(By.tagName(word), valueName));
+	  			break;
+	  		}
+		}
+	  	public static boolean brokenLinkCheck (String urlName, String urlLink){
+	        try {
+	            huc = (HttpURLConnection)(new URL(urlLink).openConnection());
+	            huc.setRequestMethod("HEAD");
+	            huc.connect();
+	            respCode = huc.getResponseCode();
+	            if(respCode >= 400 && respCode != 503){ //자료실 다이렉트x 다운로드 링크 503나서 예외처리 그래도 http코드는 볼수있게함
+	            	System.out.println("***** " + urlName +" : 링크 상태 HTTP : " + respCode + " *****");
+	            	fail();
+	            } else {
+	            	System.out.println(urlName +" : 링크 상태 HTTP : " + respCode);
+	            }
+	        } catch (MalformedURLException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+			return false;
+	    }
+	  	
+		@Test(priority = 0)
+		public void Login() {
+	        driver.get(baseUrl + "/login/form.ct");
+	  		elementWait("class", "uid_login_type");
+	        assertTrue(driver.getPageSource().contains("User ID"));
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));        
+	        System.out.println(TestBrowser + " 로그인 페이지 : Pass");
+	        js.executeScript("$('input[name=j_username]').prop('value', 'apzz0928');");
+	        js.executeScript("$('input[name=j_password]').prop('value', 'qordlf!@34');");
+	        js.executeScript("$('.ac_btn_text')[0].click();");
+	        System.out.println(TestBrowser + " 로그인 : Pass");    
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	    }
+	  	@Test(priority = 1)
+	    public void langChange() {
+	    	driver.get(baseUrl + "/common/locale/ko");
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+	        if(TestBrowser.equals("firefox")){
+	        	elementWait("class", "numberCell");
+	        } else {
+		        assertTrue(driver.getPageSource().contains("true"));	        	
+	        }
+	        System.out.println(TestBrowser + " 언어변경 : Pass");
+	        driver.get(baseUrl);
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+		}
+	  	@Test(priority = 2)
+	    public void authorityMenu_groupOrder() {
+	        driver.get(baseUrl + "/authority/menugroup.ct");
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+	        assertTrue(driver.getPageSource().contains("메뉴 관리"));
+	        System.out.println("권한 관리 > 메뉴 관리 > 리스트 페이지 접근 : Pass");
+	        js.executeScript("$('.uid_group_order_btn').eq(0).click();");
+	        elementWait("class", "uid_ok_btn");
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        elementWait("class", "uid_group_order_btn");
+	        js.executeScript("$('.uid_group_order_btn').eq(1).click();");
+	        elementWait("class", "uid_ok_btn");
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        System.out.println("권한 관리 > 메뉴 관리 > 순서 변경 : Pass");
+	  	}
+	  	@Test(priority = 3)
+	    public void authorityMenu_keywordSearch() {
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        elementWait("class", "uid_menu_search_keyword");
+	        js.executeScript("$('.ac_input').prop('value', 'common');");
+	        js.executeScript("$('.uid_menu_search').click();");
+	        assertTrue(driver.getPageSource().contains("공통기능"));
+	        js.executeScript("$('.ac_input').prop('value', '')");
+	        js.executeScript("$('.uid_menu_search').click();");
+	        System.out.println("권한 관리 > 메뉴 관리 > 검색 : Pass");
+	  	}
+	  	@Test(priority = 2)
+	    public void authorityMenu_detailMenu_add() {
+	        js.executeScript("$('.uid_menu_title > a')[0].click();");
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        elementWait("class", "uid_show_layer_menu_add_btn");
+	        assertFalse(driver.getPageSource().contains("페이지 주소가 잘못 입력되었거나, 이미 삭제된 페이지입니다."));
+	        System.out.println("권한 관리 > 메뉴 관리 > 상세보기 페이지 접근 : Pass");
+	        js.executeScript("$('.uid_show_layer_menu_add_btn').click();");
+	        js.executeScript("$('div > input').prop('value', 'Test Menu1');");
+	        js.executeScript("$('input[name=menuURI]').val('/test.ct');");
+	        js.executeScript("$('.uid_layer_menu_add_btn').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("숫자만 입력 가능 합니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        js.executeScript("$('input[name=menuHide]').val('0');");
+	        js.executeScript("$('.uid_layer_menu_add_btn').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("숫자만 입력 가능 합니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        js.executeScript("$('input[name=menuOrder]').val('1');");
+	        js.executeScript("$('.uid_layer_menu_add_btn').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("추가 되었습니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        System.out.println("권한 관리 > 메뉴 관리 > 상세보기 페이지 > 메뉴 추가 : Pass");
+	  	}
+	  	@Test(priority = 2)
+	    public void authorityMenu_detailMenu_menuOrder() {
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        elementWait("class", "uid_menu_order_btn");
+	        js.executeScript("$('.uid_menu_order_btn:eq(2)').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("변경 되었습니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        js.executeScript("$('.uid_menu_order_btn:eq(3)').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("변경 되었습니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        System.out.println("권한 관리 > 메뉴 관리 > 상세보기 페이지 > 메뉴 순서 변경 : Pass");
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        js.executeScript("$('.uid_menu_del_btn:eq(1)').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("이점 유의 해 주세요."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        elementWait("class", "ac_container_message_footer");
+	        assertTrue(driver.getPageSource().contains("삭제 되었습니다."));
+	        js.executeScript("$('.uid_ok_btn').click();");
+	        System.out.println("권한 관리 > 메뉴 관리 > 상세보기 페이지 > 메뉴 삭제 : Pass");        
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	    }
+	  	//@Test(priority = 99)
+	    public void Logout(){
+	        elementWait("id", "ac_layout_aside");
+	        elementWait("id", "ac_layout_footer");
+	        elementWait("class", "btn-logout");
+	  		js.executeScript("$('.member-info > a')[0].click();");
+	  		elementWait("class", "uid_login_type");
+	        System.out.println(TestBrowser + " 로그아웃 : Pass");
+	  	}
+		@AfterClass
+		public void afterTest() {
+			System.out.println(TestBrowser + " AfterClass");
+			if(TestBrowser.equals("firefox")){
+				driver.quit();
+			} else {
+				driver.close();
+			}
+	        String verificationErrorString = verificationErrors.toString();
+	        if (!"".equals(verificationErrorString)) {
+	            fail(verificationErrorString);
+	        }
+		}		
+}	

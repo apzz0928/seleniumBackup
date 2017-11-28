@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [GridExample Suite]" parallel="tests">
+  <test name="IETest(failed)" parallel="tests">
+    <parameter name="browser" value="internetExplorer"/>
+    <classes>
+      <class name="GridExample">
+        <methods>
+          <include name="closeBrowser"/>
+          <include name="calculatepercent"/>
+          <include name="launchbrowser"/>
+        </methods>
+      </class> <!-- GridExample -->
+    </classes>
+  </test> <!-- IETest(failed) -->
+</suite> <!-- Failed suite [GridExample Suite] -->

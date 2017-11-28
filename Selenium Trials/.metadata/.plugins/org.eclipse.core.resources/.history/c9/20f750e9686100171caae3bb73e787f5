@@ -1,0 +1,56 @@
+
+import org.junit.Rule;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.testng.ScreenShooter;
+
+import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Condition.*;
+
+
+public class selenideTest {	
+	private static WebDriver driver;
+	private static String TestBrowser;
+	private static String CHROMEDRIVER_FILE_PATH;
+	private static String FIREFOXDRIVER_FILE_PATH;
+	private static String INTERNETEXPLORER_FILE_PATH;
+	
+	@Rule
+	public ScreenShooter takeScreenshotSelenide = ScreenShooter.failedTests().succeededTests();
+
+	@Test
+	public void checkGoogleSearchResultsReturnValidResultNumberAndText() {
+	    System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver_2");
+	    //Doesn't matter chrome or Chrome as this is case insensitive.
+	    System.setProperty("selenide.browser", "Chrome");
+	    open("http://google.com");
+	    $(By.name("q")).setValue("Selenide").pressEnter();
+
+	    // assure there are 10 results in the page
+	    // static import shortcut, place the cursor on the method and press
+	    // ctrl+shift+m/ cmd+shift+m
+	    // $ -> driver.findElement, $$ -> driver.findElements
+	    $$(".iris li.g").shouldHave(size(10));
+	    $(".iris li.g").shouldHave(text("Selenide World!"));
+	}
+	
+	private CollectionCondition size(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@AfterClass
+	public void testEnd(){
+		driver.quit();
+	}
+}
